@@ -1,3 +1,7 @@
+bsegal_travel_api:
+    resource: "@BsegalTravelApiBundle/Resources/config/routing.yml"
+    prefix:   /
+
 app:
     resource: "@AppBundle/Controller/"
     type:     annotation

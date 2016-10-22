@@ -1,0 +1,4 @@
+services:
+#    bsegal_travel_api.example:
+#        class: Bsegal\TravelApiBundle\Example
+#        arguments: ["@service_id", "plain_value", %parameter%]
