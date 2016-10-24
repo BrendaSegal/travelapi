@@ -27,6 +27,12 @@ class Region
     private $name;
 
     /**
+      * @ORM\ManyToOne(targetEntity="Country")
+      * @ORM\JoinColumn(name="country_id", referencedColumnName="id", nullable=false)
+      */
+    private $country;
+
+    /**
      * Get id
      *
      * @return integer
@@ -82,5 +88,29 @@ class Region
     public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * Set country
+     *
+     * @param \Bsegal\TravelApiBundle\Entity\Country $country
+     *
+     * @return Region
+     */
+    public function setCountry(\Bsegal\TravelApiBundle\Entity\Country $country)
+    {
+        $this->country = $country;
+
+        return $this;
+    }
+
+    /**
+     * Get country
+     *
+     * @return \Bsegal\TravelApiBundle\Entity\Country
+     */
+    public function getCountry()
+    {
+        return $this->country;
     }
 }

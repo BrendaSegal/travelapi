@@ -1,4 +1,18 @@
 services:
-#    bsegal_travel_api.example:
-#        class: Bsegal\TravelApiBundle\Example
-#        arguments: ["@service_id", "plain_value", %parameter%]
+    bsegal_travel_api.country_manager:
+      class: Bsegal\TravelApiBundle\Manager\CountryManager
+      arguments: 
+        entityManager: "@doctrine.orm.entity_manager"
+
+    bsegal_travel_api.region_manager:
+      class: Bsegal\TravelApiBundle\Manager\RegionManager
+      arguments: 
+        entityManager: "@doctrine.orm.entity_manager"
+        countryManager: "@bsegal_travel_api.country_manager"
+
+    bsegal_travel_api.airport_manager:
+      class: Bsegal\TravelApiBundle\Manager\AirportManager
+      arguments: 
+        entityManager: "@doctrine.orm.entity_manager"
+        countryManager: "@bsegal_travel_api.country_manager"
+        regionManager: "@bsegal_travel_api.region_manager"
