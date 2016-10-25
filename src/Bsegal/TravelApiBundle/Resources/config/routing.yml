@@ -1,3 +1,7 @@
 bsegal_travel_api_homepage:
     path:     /
     defaults: { _controller: BsegalTravelApiBundle:Default:index }
+
+airports:
+    type:     rest
+    resource: Bsegal\TravelApiBundle\Controller\AirportController

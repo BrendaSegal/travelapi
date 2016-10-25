@@ -16,6 +16,20 @@ class RegionManager
         $this->countryManager = $countryManager;
     }
 
+    /**
+     * Creates a new Region with the given parameters, unless one with code $code
+     *     already exists.
+     * 
+     * @param  string $code the region code
+     * @param  string $name the region name
+     * @param  string $countryCode the region's country code
+     * 
+     * @throws  \Exception if country with $countryCode does not exist, since no association
+     *          to Country could be made
+     * @throws  \Exception if region with region code $code already exists
+     * 
+     * @return REgion the resulting created entity
+     */
     public function createNewRegion(
         $code, 
         $name,
@@ -32,7 +46,7 @@ class RegionManager
 
         //country doesn't exist, can't create region
         if (is_null($country)) {
-            return null;
+            throw new \Exception('Country with code '.$countryCode.' does not exist.');
         }
 
         $region = new Region();
@@ -45,6 +59,13 @@ class RegionManager
         return $region;
     }
 
+    /**
+     * Locates the region with code $regionCode.
+     * 
+     * @param  string $regionCode region's code
+     * 
+     * @return mixed Region|null the Region if lcoated, null otherwise
+     */
     public function findRegion($regionCode)
     {
         $em = $this->entityManager;
@@ -59,6 +80,13 @@ class RegionManager
         return $regions[0];
     }
 
+    /**
+     * Verifies if region with code $regionCode exists.
+     * 
+     * @param  string $regionCode
+     * 
+     * @return boolean true if region exists, false otherwise
+     */
     public function regionExists($regionCode)
     {
         return !is_null($this->findRegion($regionCode));

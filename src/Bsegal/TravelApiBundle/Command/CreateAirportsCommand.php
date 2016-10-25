@@ -22,6 +22,15 @@ class CreateAirportsCommand extends ContainerAwareCommand
             ->setHelp("Create airports from csv...");
     }
 
+    /**
+     * Executes command to create new Country, Region, and Airport entities
+     *     from the csv files stored in Bsegal/TravelApiBundle/Resources/csv/.
+     *     
+     * @param  InputInterface  $input
+     * @param  OutputInterface $output
+     * 
+     * @return void
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $output->writeln("Creating new countries:");
@@ -34,6 +43,14 @@ class CreateAirportsCommand extends ContainerAwareCommand
         $this->createAirports($output, $this->getRealFilePath($this->csvPath, $this->airportCsv));
     }
 
+    /**
+     * Locates the file in $filePath/$fileName and returns the path to this file
+     * 
+     * @param  string $filePath part of the path to the file
+     * @param  string $fileName the filename
+     * 
+     * @return string actual path to file
+     */
     protected function getRealFilePath($filePath, $fileName)
     {
         $finder = new Finder();
@@ -50,6 +67,14 @@ class CreateAirportsCommand extends ContainerAwareCommand
         return $file->getRealPath();
     }
 
+    /**
+     * Creates Region entities, by reading the lines in the regions csv file. 
+     * 
+     * @param  OutputInterface $output
+     * @param  string $regionCsv path to the regions csv file
+     * 
+     * @return void
+     */
     protected function createRegions(OutputInterface $output, $regionCsv)
     {
         $columnsOfConcern = [
@@ -100,6 +125,14 @@ class CreateAirportsCommand extends ContainerAwareCommand
         }
     }
 
+    /**
+     * Creates Country entities, by reading the lines in the countries csv file. 
+     * 
+     * @param  OutputInterface $output
+     * @param  string $regionCsv path to the regions csv file
+     * 
+     * @return void
+     */
     protected function createCountries(OutputInterface $output, $countryCsv)
     {
         $columnsOfConcern = [
@@ -150,6 +183,14 @@ class CreateAirportsCommand extends ContainerAwareCommand
         }
     }
 
+    /**
+     * Creates Airport entities, by reading the lines in the airports csv file. 
+     * 
+     * @param  OutputInterface $output
+     * @param  string $regionCsv path to the regions csv file
+     * 
+     * @return void
+     */
     protected function createAirports(OutputInterface $output, $airportCsv)
     {
         $columnsOfConcern = [
