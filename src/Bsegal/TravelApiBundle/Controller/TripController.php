@@ -9,7 +9,32 @@ use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Controller\Annotations\Get;
 
 class TripController extends FOSRestController
-{
+{   
+    /**
+    * @Get("/trips/create/{passengerId}/{roundTrip}", name="create_trip_for_passenger", 
+    * options={ "method_prefix" = false })
+    *
+    * Creates a new trip for a Passenger.
+    * 
+    * @param int $passengerId
+    * @param boolean $roundTrip
+    * 
+    * @return  array data
+    */
+    public function createTrip($passengerId, $roundTrip)
+    {
+        $tripManager = $this->get('bsegal_travel_api.trip_manager');
+
+        try {
+            $trips = $tripManager->createNewTrip($passengerId, $roundTrip);
+            $view = new View($trips);
+        } catch (\Exception $e) {
+            $view = new View(['Exception' => $e->getMessage()]);
+        }
+
+        return $this->get('fos_rest.view_handler')->handle($view);
+    }
+
     /**
     * @Get("/trips/passenger/{passengerId}", name="get_trips_by_passenger_id", 
     * options={ "method_prefix" = false })
@@ -48,16 +73,13 @@ class TripController extends FOSRestController
     public function addOutboundFlightToTrip($tripId, $flightId)
     {
         $tripManager = $this->get('bsegal_travel_api.trip_manager');
-        $flightManager = $this->get('bsegal_travel_api.flight_manager');
-
-        $trip = $tripManager->getTripById($tripId);
-        $flight = $flightManager->getFlightById($flightId);
-
-        if (empty($trip) || empty($flight)) {
-            $view = new View(['Exception' => 'Failed to add flight to trip.']);
+        
+        try {
+            $trip = $tripManager->addFlightToTrip($tripId, $flightId, true);
+        } catch (\Exception $e) {
+            $view = new View(['Exception' =>$e->getMessage()]);
         }
 
-        $trip = $tripManager->addFlightToTrip($trip, $flight, true);
         $view = new View($trip);
 
         return $this->get('fos_rest.view_handler')->handle($view);
@@ -77,26 +99,23 @@ class TripController extends FOSRestController
     public function addReturnFlightToTrip($tripId, $flightId)
     {
         $tripManager = $this->get('bsegal_travel_api.trip_manager');
-        $flightManager = $this->get('bsegal_travel_api.flight_manager');
-
-        $trip = $tripManager->getTripById($tripId);
-        $flight = $flightManager->getFlightById($flightId);
-
-        if (empty($trip) || empty($flight)) {
-            $view = new View(['Exception' => 'Failed to add flight to trip.']);
+        
+        try {
+            $trip = $tripManager->addFlightToTrip($tripId, $flightId, false);
+        } catch (\Exception $e) {
+            $view = new View(['Exception' =>$e->getMessage()]);
         }
-
-        $trip = $tripManager->addFlightToTrip($trip, $flight, false);
+        
         $view = new View($trip);
 
         return $this->get('fos_rest.view_handler')->handle($view);
     }
 
     /**
-    * @Get("/trips/remove/outbound/flight/{tripId}/{flightId}", name="remove_outbound_flight_to_trip", 
+    * @Get("/trips/remove/outbound/flight/{tripId}/{flightId}", name="remove_outbound_flight_from_trip", 
     * options={ "method_prefix" = false })
     *
-    * Removes Outbound Flight to Trip
+    * Removes Outbound Flight from Trip
     * 
     * @param int $tripId
     * @param int $flightId
@@ -105,11 +124,21 @@ class TripController extends FOSRestController
     */
    public function removeOutboundFlightFromTrip($tripId, $flightId)
    {
+        $tripManager = $this->get('bsegal_travel_api.trip_manager');
 
+        try {
+            $trip = $tripManager->removeFlightFromTrip($trip, $flight, true);
+        } catch (\Exception $e) {
+            $view = new View(['Exception' =>$e->getMessage()]);
+        }
+        
+        $view = new View($trip);
+
+        return $this->get('fos_rest.view_handler')->handle($view);
    }
 
     /**
-    * @Get("/trips/remove/return/flight/{tripId}/{flightId}", name="remove_return_flight_to_trip", 
+    * @Get("/trips/remove/return/flight/{tripId}/{flightId}", name="remove_return_flight_from_trip", 
     * options={ "method_prefix" = false })
     *
     * Removes Return Flight from Trip
@@ -121,6 +150,16 @@ class TripController extends FOSRestController
     */
     public function removeReturnFlightFromTrip($tripId, $flightId)
     {
+        $tripManager = $this->get('bsegal_travel_api.trip_manager');
 
+        try {
+            $trip = $tripManager->removeFlightFromTrip($trip, $flight, false);
+        } catch (\Exception $e) {
+            $view = new View(['Exception' =>$e->getMessage()]);
+        }
+        
+        $view = new View($trip);
+
+        return $this->get('fos_rest.view_handler')->handle($view);
     }
 }

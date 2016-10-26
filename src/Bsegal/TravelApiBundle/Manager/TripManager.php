@@ -12,23 +12,37 @@ class TripManager
     private $entityManager;
 
     public function __construct(
-        EntityManager $entityManager
+        EntityManager $entityManager,
+        PassengerManager $passengerManager,
+        FlightManager $flightManager
     ) {
         $this->entityManager = $entityManager;
+        $this->passengerManager = $passengerManager;
+        $this->flightManager = $flightManager;
     }
 
     /**
-     * Create new Trip for Passenger $passenger
+     * Create new Trip for Passenger defined by $passengerId
      * 
-     * @param  Passenger $passenger the passenger going on the trip
+     * @param  integer $passengerId the id of the passenger going on the trip
      * @param  boolean $isRoundtrip
+     *
+     * @throws \Exception when passengerId does not refer to an existing Passenger
+     * 
      * @return Trip the newly created Trip entity
      */
     public function createNewTrip(
-        Passenger $passenger,
+        $passengerId,
         $isRoundtrip = true
     ) {
         $em = $this->entityManager;
+
+        $passenger = $this->passengerManager
+            ->getPassengerById($passengerId);
+
+        if (empty($passenger)) {
+            throw new \Exception("Passenger with id ".$passengerId." does not exist.");
+        }
 
         $trip = new Trip();
 
@@ -72,19 +86,20 @@ class TripManager
     }
 
     /**
-     * Add Flight to the specified trip
+     * Add a Flight to a specified Trip
      * 
-     * @param Trip $trip
-     * @param Flight $flight the flight to add to the trip
+     * @param int $tripId
+     * @param int $flightId the flight to add to the trip
      * @param boolean $outbound true if this is an outbound flight, false otherwise
      *
      * @throws \Exception when Trip does not exist
-     *
+     * @throws \Exception when Flight does not exist
+     * 
      * @return  Trip
      */
     public function addFlightToTrip(
-        Trip $trip,
-        Flight $flight,
+        $tripId,
+        $flightId,
         $outbound = true
     ) {
         $em = $this->entityManager;
@@ -94,6 +109,12 @@ class TripManager
 
         if (empty($trip)) {
             throw new \Exception('Trip with id '.$tripId.' does not exist.');
+        }
+
+        $flight = $this->flightManager->getFlightById($flightId);
+
+        if (empty(flight)) {
+            throw new \Exception('Flight with id '.$flightId.' does not exist.');
         }
 
         $trip->setUpdatedAt(new \DateTime('now'));
@@ -110,19 +131,20 @@ class TripManager
     }
 
     /**
-     * Removes Flight from specified trip
+     * Removes a Flight from a specified Trip
      * 
-     * @param Trip $trip
-     * @param Flight $flight the flight to add to the trip
+     * @param int $tripId
+     * @param int $flightId the flight to add to the trip
      * @param boolean $outbound true if this is an outbound flight, false otherwise
      *
      * @throws \Exception when Trip does not exist
-     *
+     * @throws \Exception when Flight does not exist
+     * 
      * @return  Trip
      */
     public function removeFlightFromTrip(
-        Trip $trip, 
-        Flight $flight,
+        $tripId,
+        $flightId,
         $outbound = true
     ) {
         $em = $this->entityManager;
@@ -132,6 +154,12 @@ class TripManager
 
         if (empty($trip)) {
             throw new \Exception('Trip with id '.$tripId.' does not exist.');
+        }
+
+        $flight = $this->flightManager->getFlightById($flightId);
+
+        if (empty(flight)) {
+            throw new \Exception('Flight with id '.$flightId.' does not exist.');
         }
 
         $trip->setUpdatedAt(new \DateTime('now'));

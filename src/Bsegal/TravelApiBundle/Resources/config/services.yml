@@ -32,3 +32,5 @@ services:
       class: Bsegal\TravelApiBundle\Manager\TripManager
       arguments: 
         entityManager: "@doctrine.orm.entity_manager"
+        passengerManager: "@bsegal_travel_api.passenger_manager"
+        flightManager: "@bsegal_travel_api.flight_manager"

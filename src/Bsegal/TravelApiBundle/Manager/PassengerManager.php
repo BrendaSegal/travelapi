@@ -75,4 +75,17 @@ class PassengerManager
 
         return $passenger;
     }
+
+    /**
+     * Retrieves an existing Passenger entity
+     * 
+     * @param int $passengerId the desired Passenger id
+     * 
+     * @return Passenger
+     */
+    public function getPassengerById($passengerId)
+    {
+        return $this->entityManager->getRepository('BsegalTravelApiBundle:Flight')
+            ->find($flightId);
+    }
 }

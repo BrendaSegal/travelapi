@@ -1,7 +1,15 @@
-bsegal_travel_api_homepage:
-    path:     /
-    defaults: { _controller: BsegalTravelApiBundle:Default:index }
-
 airports:
     type:     rest
     resource: Bsegal\TravelApiBundle\Controller\AirportController
+
+flights:
+    type:     rest
+    resource: Bsegal\TravelApiBundle\Controller\FlightController
+
+trips:
+    type:     rest
+    resource: Bsegal\TravelApiBundle\Controller\TripController
+
+passengers:
+    type:     rest
+    resource: Bsegal\TravelApiBundle\Controller\PassengerController
