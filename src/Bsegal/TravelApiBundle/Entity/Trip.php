@@ -22,18 +22,6 @@ class Trip
     private $isRoundtrip;
 
     /**
-      * @ORM\ManyToOne(targetEntity="Airport")
-      * @ORM\JoinColumn(name="arrival_airport_id", referencedColumnName="id", nullable=false)
-      */
-    private $arrivalAirport;
-
-    /**
-      * @ORM\ManyToOne(targetEntity="Airport")
-      * @ORM\JoinColumn(name="departure_airport_id", referencedColumnName="id", nullable=false)
-      */
-    private $departureAirport;
-
-    /**
      * @ORM\ManyToOne(targetEntity="Passenger")
      * @ORM\JoinColumn(name="passenger_id", referencedColumnName="id", nullable=false)
      */
@@ -51,28 +39,28 @@ class Trip
 
     /**
      * @ORM\ManyToMany(targetEntity="Flight")
-     * @ORM\JoinTable(name="trips_arrival_flights",
+     * @ORM\JoinTable(name="trips_return_flights",
      *      joinColumns={@ORM\JoinColumn(name="trip_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="flight_id", referencedColumnName="id")}
      *      )
      */
-    private $arrivalFlights;
+    private $returnFlights;
 
     /**
      * @ORM\ManyToMany(targetEntity="Flight")
-     * @ORM\JoinTable(name="trips_departure_flights",
+     * @ORM\JoinTable(name="trips_outbound_flights",
      *      joinColumns={@ORM\JoinColumn(name="trip_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="flight_id", referencedColumnName="id")}
      *      )
      */
-    private $departureFlights;
+    private $outboundFlights;
     /**
      * Constructor
      */
     public function __construct()
     {
-        $this->arrivalFlights = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->departureFlights = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->returnFlights = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->outboundFlights = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -158,54 +146,6 @@ class Trip
     }
 
     /**
-     * Set arrivalAirport
-     *
-     * @param \Bsegal\TravelApiBundle\Entity\Airport $arrivalAirport
-     *
-     * @return Trip
-     */
-    public function setArrivalAirport(\Bsegal\TravelApiBundle\Entity\Airport $arrivalAirport)
-    {
-        $this->arrivalAirport = $arrivalAirport;
-
-        return $this;
-    }
-
-    /**
-     * Get arrivalAirport
-     *
-     * @return \Bsegal\TravelApiBundle\Entity\Airport
-     */
-    public function getArrivalAirport()
-    {
-        return $this->arrivalAirport;
-    }
-
-    /**
-     * Set departureAirport
-     *
-     * @param \Bsegal\TravelApiBundle\Entity\Airport $departureAirport
-     *
-     * @return Trip
-     */
-    public function setDepartureAirport(\Bsegal\TravelApiBundle\Entity\Airport $departureAirport)
-    {
-        $this->departureAirport = $departureAirport;
-
-        return $this;
-    }
-
-    /**
-     * Get departureAirport
-     *
-     * @return \Bsegal\TravelApiBundle\Entity\Airport
-     */
-    public function getDepartureAirport()
-    {
-        return $this->departureAirport;
-    }
-
-    /**
      * Set passenger
      *
      * @param \Bsegal\TravelApiBundle\Entity\Passenger $passenger
@@ -230,70 +170,70 @@ class Trip
     }
 
     /**
-     * Add arrivalFlight
+     * Add returnFlight
      *
-     * @param \Bsegal\TravelApiBundle\Entity\Flight $arrivalFlight
+     * @param \Bsegal\TravelApiBundle\Entity\Flight $returnFlight
      *
      * @return Trip
      */
-    public function addArrivalFlight(\Bsegal\TravelApiBundle\Entity\Flight $arrivalFlight)
+    public function addReturnFlight(\Bsegal\TravelApiBundle\Entity\Flight $returnFlight)
     {
-        $this->arrivalFlights[] = $arrivalFlight;
+        $this->returnFlights[] = $returnFlight;
 
         return $this;
     }
 
     /**
-     * Remove arrivalFlight
+     * Remove returnFlight
      *
-     * @param \Bsegal\TravelApiBundle\Entity\Flight $arrivalFlight
+     * @param \Bsegal\TravelApiBundle\Entity\Flight $returnFlight
      */
-    public function removeArrivalFlight(\Bsegal\TravelApiBundle\Entity\Flight $arrivalFlight)
+    public function removeReturnFlight(\Bsegal\TravelApiBundle\Entity\Flight $returnFlight)
     {
-        $this->arrivalFlights->removeElement($arrivalFlight);
+        $this->returnFlights->removeElement($returnFlight);
     }
 
     /**
-     * Get arrivalFlights
+     * Get returnFlights
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getArrivalFlights()
+    public function getReturnFlights()
     {
-        return $this->arrivalFlights;
+        return $this->returnFlights;
     }
 
     /**
-     * Add departureFlight
+     * Add outboundFlight
      *
-     * @param \Bsegal\TravelApiBundle\Entity\Flight $departureFlight
+     * @param \Bsegal\TravelApiBundle\Entity\Flight $outboundFlight
      *
      * @return Trip
      */
-    public function addDepartureFlight(\Bsegal\TravelApiBundle\Entity\Flight $departureFlight)
+    public function addOutboundFlight(\Bsegal\TravelApiBundle\Entity\Flight $outboundFlight)
     {
-        $this->departureFlights[] = $departureFlight;
+        $this->outboundFlights[] = $outboundFlight;
 
         return $this;
     }
 
     /**
-     * Remove departureFlight
+     * Remove outboundFlight
      *
-     * @param \Bsegal\TravelApiBundle\Entity\Flight $departureFlight
+     * @param \Bsegal\TravelApiBundle\Entity\Flight $outboundFlight
      */
-    public function removeDepartureFlight(\Bsegal\TravelApiBundle\Entity\Flight $departureFlight)
+    public function removeOutboundFlight(\Bsegal\TravelApiBundle\Entity\Flight $outboundFlight)
     {
-        $this->departureFlights->removeElement($departureFlight);
+        $this->outboundFlights->removeElement($outboundFlight);
     }
 
     /**
-     * Get departureFlights
+     * Get outboundFlights
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getDepartureFlights()
+    public function getOutboundFlights()
     {
-        return $this->departureFlights;
+        return $this->outboundFlights;
     }
 }

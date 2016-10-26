@@ -23,7 +23,7 @@ class FlightController extends FOSRestController
     public function getFlightsByCountryAction($countryName)
     {
         $flightManager = $this->get('bsegal_travel_api.flight_manager');
-        $flights = $airportManager->retrieveAllFlightsByCountryName($countryName);
+        $flights = $flightManager->retrieveAllFlightsByCountryName($countryName);
         $view = new View($flights);
 
         return $this->get('fos_rest.view_handler')->handle($view);

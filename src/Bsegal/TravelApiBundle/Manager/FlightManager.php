@@ -34,9 +34,9 @@ class FlightManager
     ) {
         $em = $this->entityManager;
 
-        $flight = new Flight();
-        $flight->setArrivalAirport($arrivalAirport);
+        $flight = new Flight();        
         $flight->setDepartureAirport($departureAirport);
+        $flight->setArrivalAirport($arrivalAirport);
         $flight->setNumberOfTicketsAvailable($numberOfTicketsAvailable);
 
         $flight->setCreatedAt(new \DateTime('now'));
@@ -46,5 +46,18 @@ class FlightManager
         $em->flush();
 
         return $flight;
+    }
+
+    /**
+     * Retrieves an existing Flight entity
+     * 
+     * @param int $flightId the desired flight id
+     * 
+     * @return Flight
+     */
+    public function getFlightById($flightId)
+    {
+        return $this->entityManager->getRepository('BsegalTravelApiBundle:Flight')
+            ->find($flightId);
     }
 }
