@@ -33,6 +33,31 @@ class TripController extends FOSRestController
     }
     
     /**
+     * Displays Flights for the trip with $tripId
+     * [GET] /trips/{tripId}/flights
+     * 
+     * @param int $tripId
+     * 
+     * @return array representation of Trip with $tripId
+     */
+    public function getTripsFlightsAction($tripId)
+    {
+        $tripManager = $this->get('bsegal_travel_api.trip_manager');
+        
+        try {
+            $trip = $tripManager->getTripById($tripId);
+            $view = new View([
+               'outbound' => $trip->getOutboundFlights(),
+               'return' => $trip->getReturnFlights(),
+            ]);
+        } catch (\Exception $e) {
+            $view = new View(['Exception' => $e->getMessage()]);
+        }
+
+        return $this->get('fos_rest.view_handler')->handle($view);
+    }
+    
+    /**
      * Creates a new Trip with the provided POST data
      * [POST] /trips
      * 
@@ -47,7 +72,7 @@ class TripController extends FOSRestController
         $data = json_decode($request->getContent(), true);
         $tripManager = $this->get('bsegal_travel_api.trip_manager');
 
-        $passenger = $tripManager->createNewTrip(
+        $passenger = $tripManager->createNewEmptyTrip(
             $data['passengerId'],
             $data['isRoundtrip']
         );
@@ -57,7 +82,7 @@ class TripController extends FOSRestController
     
     /**
      * Adds Outbound Flight to Trip
-     * [LINK] /trips/{tripId}/outboundflights/{flightId}
+     * [PUT] /trips/{tripId}/outboundflights/{flightId}
      * 
      * @param int $tripId
      * @param int $flightId
@@ -65,48 +90,46 @@ class TripController extends FOSRestController
      * @return  array of Trip with new added Flight
      * 
      */
-    public function linkTripOutboundflightAction($tripId, $flightId)
+    public function putTripOutboundflightAction($tripId, $flightId)
     {
         $tripManager = $this->get('bsegal_travel_api.trip_manager');
         
         try {
             $trip = $tripManager->addFlightToTrip($tripId, $flightId, true);
+            $view = new View($trip);
         } catch (\Exception $e) {
             $view = new View(['Exception' =>$e->getMessage()]);
         }
-
-        $view = new View($trip);
 
         return $this->get('fos_rest.view_handler')->handle($view);
     }
     
     /**
      * Adds Return Flight to Trip
-     * [LINK] /trips/{tripId}/returnflights/{flightId}
+     * [PUT] /trips/{tripId}/returnflights/{flightId}
      * @param int $tripId
      * @param int $flightId
      * 
      * @return  array of Trip with new added Flight
      * 
      */
-    public function linkTripReturnflightAction($tripId, $flightId)
+    public function putTripReturnflightAction($tripId, $flightId)
     {
         $tripManager = $this->get('bsegal_travel_api.trip_manager');
         
         try {
             $trip = $tripManager->addFlightToTrip($tripId, $flightId, false);
+            $view = new View($trip);
         } catch (\Exception $e) {
             $view = new View(['Exception' =>$e->getMessage()]);
         }
-
-        $view = new View($trip);
-
+        
         return $this->get('fos_rest.view_handler')->handle($view);
     }
 
    /**
     * Removes Outbound Flight from Trip
-    * [GET] /trips/{tripId}/outboundflights/{flightId}
+    * [GET] /trips/{tripId}/outboundflights/{flightId}/remove
     * 
     * @param int $tripId
     * @param int $flightId
@@ -118,19 +141,18 @@ class TripController extends FOSRestController
         $tripManager = $this->get('bsegal_travel_api.trip_manager');
 
         try {
-            $trip = $tripManager->removeFlightFromTrip($trip, $flight, true);
+            $trip = $tripManager->removeFlightFromTrip($trip, $flight, true);            
+            $view = new View($trip);
         } catch (\Exception $e) {
             $view = new View(['Exception' =>$e->getMessage()]);
         }
         
-        $view = new View($trip);
-
         return $this->get('fos_rest.view_handler')->handle($view);
    }
 
    /**
     * Removes Return Flight from Trip
-    * [GET] /trips/{tripId}/returnflights/{flightId}
+    * [GET] /trips/{tripId}/returnflights/{flightId}/remove
     * 
     * @param int $tripId
     * @param int $flightId
@@ -143,12 +165,11 @@ class TripController extends FOSRestController
 
         try {
             $trip = $tripManager->removeFlightFromTrip($trip, $flight, false);
+            $view = new View($trip);
         } catch (\Exception $e) {
             $view = new View(['Exception' =>$e->getMessage()]);
         }
         
-        $view = new View($trip);
-
         return $this->get('fos_rest.view_handler')->handle($view);
    }
 }

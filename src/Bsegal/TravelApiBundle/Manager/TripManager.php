@@ -31,7 +31,7 @@ class TripManager
      * 
      * @return Trip the newly created Trip entity
      */
-    public function createNewTrip(
+    public function createNewEmptyTrip(
         $passengerId,
         $isRoundtrip = true
     ) {
@@ -51,6 +51,48 @@ class TripManager
         $trip->setUpdatedAt(new \DateTime('now'));
         $trip->setCreatedAt(new \DateTime('now'));
 
+        $em->persist($trip);
+        $em->flush();
+
+        return $trip;
+    }
+    
+    
+    /**
+     * 
+     * @param Passenger $passenger
+     * @param array $outboundFlights array of Flight entities 
+     * @param array $returnFlights array of Flight entities 
+     * @param boolean $isRoundtrip
+     * @return Trip
+     */
+    public function createNewTrip(
+        Passenger $passenger,
+        $outboundFlights,
+        $returnFlights,
+        $isRoundtrip = true
+    ) {
+        $em = $this->entityManager;
+
+        $trip = new Trip();
+
+        $trip->setIsRoundtrip($isRoundtrip);
+        $trip->setPassenger($passenger);
+        $trip->setUpdatedAt(new \DateTime('now'));
+        $trip->setCreatedAt(new \DateTime('now'));
+        
+        if (!empty($outboundFlights)) {
+            foreach ($outboundFlights as $outboundFlight) {
+                $trip->addOutboundFlight($outboundFlight);
+            }
+        }
+        
+        if (!empty($returnFlights)) {
+            foreach ($returnFlights as $returnFlight) {
+                $trip->addReturnFlight($returnFlight);
+            }
+        }
+        
         $em->persist($trip);
         $em->flush();
 
@@ -116,13 +158,13 @@ class TripManager
 
         $flight = $this->flightManager->getFlightById($flightId);
 
-        if (empty(flight)) {
+        if (empty($flight)) {
             throw new \Exception('Flight with id '.$flightId.' does not exist.');
         }
 
         $trip->setUpdatedAt(new \DateTime('now'));
 
-        if ($wayThere) {
+        if ($outbound) {
             $trip->addOutboundFlight($flight);
         } else {
             $trip->addReturnFlight($flight);
@@ -161,13 +203,13 @@ class TripManager
 
         $flight = $this->flightManager->getFlightById($flightId);
 
-        if (empty(flight)) {
+        if (empty($flight)) {
             throw new \Exception('Flight with id '.$flightId.' does not exist.');
         }
 
         $trip->setUpdatedAt(new \DateTime('now'));
 
-        if ($wayThere) {
+        if ($outbound) {
             $trip->removeOutboundFlight($flight);
         } else {
             $trip->removeReturnFlight($flight);
@@ -208,7 +250,7 @@ class TripManager
             'return' => [],
         ];
         
-        $trips = $this->retrieveAllTripsByPassengerId($passengerId);
+        $trips = $this->getAllTripsByPassengerId($passengerId);
         
         foreach ($trips as $trip) {
             array_push($flights['outbound'], $trip->getOutboundFlights());

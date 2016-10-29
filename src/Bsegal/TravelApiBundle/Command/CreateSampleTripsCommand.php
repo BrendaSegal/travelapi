@@ -7,7 +7,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Finder\Finder;
-use Bsegal\TravelApiBundle\Manager\PassengerManager;
+use Bsegal\TravelApiBundle\Manager\FlightManager;
+use Bsegal\TravelApiBundle\Manager\TripManager;
+use Bsegal\TravelApiBundle\Entity\Passenger;
 
 class CreateSampleTripsCommand extends ContainerAwareCommand
 {
@@ -28,156 +30,47 @@ class CreateSampleTripsCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $flightManager = $this->getContainer()->get('bsegal_travel_api.flight_manager');
+        $tripManager = $this->getContainer()->get('bsegal_travel_api.trip_manager');
         $passengerManager = $this->getContainer()->get('bsegal_travel_api.passenger_manager');
-       
+        
         $passengers = $passengerManager->getAllPassengers();
         
         foreach ($passengers as $passenger) {
-            $this->createNewTrip($passenger);
+            $this->createNewTrip($flightManager, $tripManager, $passenger);
         }
-    }
+    }    
     
-    protected function createNewPassenger(
-        PassengerManager $passengerManager
-    ) {   
-        //select our random departure and arrival Airports
-        $firstName = $this->selectRandomFirstName();
-        $lastName = $this->selectRandomLastName();
+    /**
+     * Creates a Trip entity for Passenger $passenger with random Flights.
+     * 
+     * @param \Bsegal\TravelApiBundle\Manager\FlightManager $flightManager
+     * @param \Bsegal\TravelApiBundle\Manager\TripManager $tripManager
+     * @param \Bsegal\TravelApiBundle\Entity\Passenger $passenger
+     * 
+     * @return \Bsegal\TravelApiBundle\Entity\Trip
+     */
+    protected function createNewTrip(
+        FlightManager $flightManager,
+        TripManager $tripManager, 
+        Passenger $passenger
+    ) {
+        $isRoundtrip = rand(0,1) == 1;
         
-        $phone = $this->selectRandomPhone();        
-        $email = strtolower($firstName).".".strtolower($lastName)."@gmail.com";
+        $outboundFlights = [];
+        $outboundFlights[] = $flightManager->getRandomFlight();
         
-        $passportDetails = $this->generatePassportDetails();
-
-        //select our random departure and arrival dates
-        $startDate = new \DateTime("now");
-        $startDate->sub(new \DateInterval('P100Y'));
+        $returnFlights = [];
         
-        $endDate = new \DateTime("now");
-        $endDate->sub(new \DateInterval('P1Y'));
+        if ($isRoundtrip) {
+            $returnFlights[] = $flightManager->getRandomFlight(); 
+        }
         
-        $dateOfBirth = $this->selectRandomDate($startDate, $endDate);
-        
-        $passenger = $passengerManager->createNewPassenger(
-            $firstName,
-            $lastName,
-            $passportDetails['citizenshipCountry'],
-            $passportDetails['passportNumber'],
-            $passportDetails['passportExpiry'],
-            $phone,
-            $email,
-            $dateOfBirth
+        return $tripManager->createNewTrip(
+            $passenger,
+            $outboundFlights,
+            $returnFlights,
+            $isRoundtrip
         );
-    }
-      
-    protected function generatePassportDetails()
-    {
-        $countryArray = ['Canada', 'United States', 'France', 'United Kingdom', 'Germany', 'Italy', 'China'];
-        
-        $startDate = new \DateTime("now");
-        $startDate->add(new \DateInterval('P100Y'));
-        
-        $endDate = new \DateTime("now");
-        $endDate->add(new \DateInterval('P1Y'));
-        
-        $passportDetails = [];
-        $passportDetails['passportNumber'] = $this->selectRandomPassportNumber();
-        $passportDetails['passportExpiry'] = $this->selectRandomDate($startDate, $endDate);
-        $passportDetails['citizenshipCountry'] = $countryArray[array_rand($countryArray)];
-        
-        return $passportDetails;        
-    }
-    
-    protected function selectRandomPassportNumber()
-    {
-        $passportString = '';
-        
-        for ($i=0; $i<9; $i++) {
-            $letterOrNumber = rand(0, 1);
-            
-            switch($letterOrNumber) {
-                case 0:
-                    $passportString .= chr(rand(65, 90));
-                    break;
-                case 1: 
-                    $passportString .= rand(0, 9);
-                    break;
-            }
-        }
-        
-        return $passportString;
-    }
-    
-    protected function selectRandomDate($startDate, $endDate)
-    {
-        $randomTime = rand(strtotime($startDate->format('Y-m-d H:i:s')), strtotime($endDate->format('Y-m-d H:i:s')));
-
-        $randomDate = new \DateTime();
-        $randomDate->setTimestamp($randomTime);
-
-        return $randomDate;
-    }
-    
-    protected function selectRandomPhone()
-    {
-        $phone = "";
-        
-        for ($i=0; $i<10; $i++) {
-            $phone.=rand(1, 9);
-        }
-        
-        return $phone;
-    }
-    
-    protected function selectRandomFirstName()
-    {
-        $randomNames = [
-            'Brenda',
-            'Paul',
-            'Tyler',
-            'Linda',
-            'Mickey',
-            'Jon',
-            'Homer',
-            'Bart',
-            'Lisa',
-            'Marge',
-            'Snoopy',
-            'Fred',
-            'Scooby',
-            'Tyrion',
-            'Archie',
-            'Garfield',
-            'Victor',
-            'Jake',
-            'Barney',
-        ];
-        
-        $index = rand(0, count($randomNames)-1);
-        
-        return $randomNames[$index];
-    }
-    
-    protected function selectRandomLastName()
-    {
-        $randomNames = [
-            'Jones',
-            'Paulson',
-            'Smith',
-            'Rubble',
-            'Snow',
-            'Simpson',
-            'Lannister',
-            'Blah',
-            'Matthews',
-            'White',
-            'Green',
-            'Mustard',
-            'Daniels'
-        ];
-        
-        $index = rand(0, count($randomNames)-1);
-        
-        return $randomNames[$index];
     }
 }

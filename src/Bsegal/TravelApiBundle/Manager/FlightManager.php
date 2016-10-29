@@ -200,4 +200,27 @@ class FlightManager
 
         return $query->getResult();
     }
+    
+    /**
+     * Returns a random Flight
+     * 
+     * @return Flight
+     */
+    public function getRandomFlight()
+    {
+        $entityManager = $this->entityManager;
+
+        //first count number of Flights to get the upper limit
+        //of possible ids
+        $query = $entityManager->createQueryBuilder()
+            ->select('COUNT(f.id)') 
+            ->from('BsegalTravelApiBundle:Flight', 'f')
+            ->getQuery();
+
+        $upperLimit = $query->getSingleScalarResult();
+        
+        $randomFlightId = rand(1, $upperLimit);
+
+        return $this->getFlightById($randomFlightId);
+    }
 }

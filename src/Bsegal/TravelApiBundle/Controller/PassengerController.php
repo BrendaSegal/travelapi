@@ -93,7 +93,7 @@ class PassengerController extends FOSRestController
      */
     public function getPassengerFlightsAction($passengerId)
     {
-        $passengerManager = $this->get('bsegal_travel_api.trip_manager');
+        $tripManager = $this->get('bsegal_travel_api.trip_manager');
         
         try {
             $flights = $tripManager->getAllFlightsForAllTripsByPassengerId($passengerId);            
