@@ -32,7 +32,7 @@ class FlightController extends FOSRestController
     * 
     * @param string $countryName
     * 
-    * @return  array data
+    * @return  array data Flights With corresponding country name
     */
     public function getFlightsByCountryAction($countryName)
     {
@@ -51,7 +51,7 @@ class FlightController extends FOSRestController
     * 
     * @param string $countryCode
     * 
-    * @return  array data
+    * @return array data with corresonding country code
     */
     public function getFlightsByCountryCodeAction($countryCode)
     {
@@ -70,7 +70,7 @@ class FlightController extends FOSRestController
     * 
     * @param string $regionName
     * 
-    * @return  array data
+    * @return  array data Flights with corresponding Region
     */
     public function getFlightsByRegionNameAction($regionName)
     {
@@ -89,7 +89,7 @@ class FlightController extends FOSRestController
     * 
     * @param string $municipality
     * 
-    * @return  array data
+    * @return  array data Flights with corresponding municipality
     */
     public function getFlightsByMunicipalityAction($municipality)
     {

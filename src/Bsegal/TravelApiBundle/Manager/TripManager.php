@@ -56,7 +56,10 @@ class TripManager
 
         return $trip;
     }
-
+    
+    /**
+     * 
+     */
     /**
      * Retrieve all trips for a specified Passenger with id $passengerId
      * 
@@ -66,7 +69,7 @@ class TripManager
      * 
      * @return array of Trip entities
      */
-    public function retrieveAllTripsByPassengerId($passengerId)
+    public function getAllTripsByPassengerId($passengerId)
     {
         $em = $this->entityManager;
 
@@ -186,5 +189,32 @@ class TripManager
     {
         return $this->entityManager->getRepository('BsegalTravelApiBundle:Trip')
             ->find($tripId);
+    }
+    
+    /**
+     * Retrieve all Flights for all Trips for a specified Passenger with id $passengerId
+     * 
+     * @param int $passengerId the passenger's id
+     * 
+     * @throws \Exception when no Passenger with the specified id exists
+     * 
+     * @return array containing all Flights, such that array['outbound'] is all 
+     * Outbound Flights and array['return'] is all Return Fligths
+     */
+    public function getAllFlightsForAllTripsByPassengerId($passengerId)
+    {
+        $flights = [
+            'outbound' => [],
+            'return' => [],
+        ];
+        
+        $trips = $this->retrieveAllTripsByPassengerId($passengerId);
+        
+        foreach ($trips as $trip) {
+            array_push($flights['outbound'], $trip->getOutboundFlights());
+            array_push($flights['return'], $trip->getReturnFlights());
+        }   
+        
+        return $flights;
     }
 }

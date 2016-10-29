@@ -121,14 +121,14 @@ class AirportManager
     }
 
     /**
-     * Retrieves list of Airport entities.
+     * Retrieves list of Airport entities in alphabetical order.
      * 
      * @return array all airport entities
      */
     public function retrieveAllAirports()
     {
         $airports = $this->entityManager->getRepository('BsegalTravelApiBundle:Airport')
-            ->findAll();
+            ->findBy(array(), array('code' => 'ASC'));
             
         return $airports;
     }

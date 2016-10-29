@@ -86,7 +86,7 @@ class PassengerManager
      */
     public function getPassengerById($passengerId)
     {
-        return $this->entityManager->getRepository('BsegalTravelApiBundle:Flight')
-            ->find($flightId);
+        return $this->entityManager->getRepository('BsegalTravelApiBundle:Passenger')
+            ->find($passengerId);
     }
 }

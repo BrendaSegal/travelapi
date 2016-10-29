@@ -11,66 +11,61 @@ use FOS\RestBundle\Controller\Annotations\Get;
 class TripController extends FOSRestController
 {   
     /**
-    * @Get("/trips/create/{passengerId}/{roundTrip}", name="create_trip_for_passenger", 
-    * options={ "method_prefix" = false })
-    *
-    * Creates a new trip for a Passenger.
-    * 
-    * @param int $passengerId
-    * @param boolean $roundTrip
-    * 
-    * @return  array data
-    */
-    public function createTrip($passengerId, $roundTrip)
-    {
-        $tripManager = $this->get('bsegal_travel_api.trip_manager');
-
-        try {
-            $trips = $tripManager->createNewTrip($passengerId, $roundTrip);
-            $view = new View($trips);
-        } catch (\Exception $e) {
-            $view = new View(['Exception' => $e->getMessage()]);
-        }
-
-        return $this->get('fos_rest.view_handler')->handle($view);
-    }
-
-    /**
-    * @Get("/trips/passenger/{passengerId}", name="get_trips_by_passenger_id", 
-    * options={ "method_prefix" = false })
-    *
-    * List all trips for a Passenger.
-    * 
-    * @param int $passengerId
-    * 
-    * @return  array data
-    */
-    public function getTripsByPassengerIdAction($passengerId)
+     * Displays Trip $tripId
+     * [GET] /trips/{tripId}
+     * 
+     * @param int $tripId
+     * 
+     * @return array representation of Trip with $tripId
+     */
+    public function getTripsAction($tripId)
     {
         $tripManager = $this->get('bsegal_travel_api.trip_manager');
         
         try {
-            $trips = $tripManager->retrieveAllTripsByPassengerId($passengerId);
-            $view = new View($trips);
+            $trip = $tripManager->getTripById($tripId);
+            $view = new View($trip);
         } catch (\Exception $e) {
             $view = new View(['Exception' => $e->getMessage()]);
         }
 
         return $this->get('fos_rest.view_handler')->handle($view);
     }
-
+    
     /**
-    * @Get("/trips/add/outbound/flight/{tripId}/{flightId}", name="add_outbound_flight_to_trip", 
-    * options={ "method_prefix" = false })
-    *
-    * Adds Outbound Flight to Trip
-    * 
-    * @param int $tripId
-    * @param int $flightId
-    * 
-    * @return  array data
-    */
-    public function addOutboundFlightToTrip($tripId, $flightId)
+     * Creates a new Trip with the provided POST data
+     * [POST] /trips
+     * 
+     * @param void
+     * 
+     * @return Response
+     */
+    public function postTripsAction()
+    {
+        $request = $this->get('request_stack')->getCurrentRequest();
+        
+        $data = json_decode($request->getContent(), true);
+        $tripManager = $this->get('bsegal_travel_api.trip_manager');
+
+        $passenger = $tripManager->createNewTrip(
+            $data['passengerId'],
+            $data['isRoundtrip']
+        );
+
+        return new Response('Created passenger with id '.$passenger->getId());
+    }
+    
+    /**
+     * Adds Outbound Flight to Trip
+     * [LINK] /trips/{tripId}/outboundflights/{flightId}
+     * 
+     * @param int $tripId
+     * @param int $flightId
+     * 
+     * @return  array of Trip with new added Flight
+     * 
+     */
+    public function linkTripOutboundflightAction($tripId, $flightId)
     {
         $tripManager = $this->get('bsegal_travel_api.trip_manager');
         
@@ -84,19 +79,17 @@ class TripController extends FOSRestController
 
         return $this->get('fos_rest.view_handler')->handle($view);
     }
-
+    
     /**
-    * @Get("/trips/add/return/flight/{tripId}/{flightId}", name="add_return_flight_to_trip", 
-    * options={ "method_prefix" = false })
-    *
-    * Adds Return Flight to Trip
-    * 
-    * @param int $tripId
-    * @param int $flightId
-    * 
-    * @return  array data
-    */
-    public function addReturnFlightToTrip($tripId, $flightId)
+     * Adds Return Flight to Trip
+     * [LINK] /trips/{tripId}/returnflights/{flightId}
+     * @param int $tripId
+     * @param int $flightId
+     * 
+     * @return  array of Trip with new added Flight
+     * 
+     */
+    public function linkTripReturnflightAction($tripId, $flightId)
     {
         $tripManager = $this->get('bsegal_travel_api.trip_manager');
         
@@ -105,24 +98,22 @@ class TripController extends FOSRestController
         } catch (\Exception $e) {
             $view = new View(['Exception' =>$e->getMessage()]);
         }
-        
+
         $view = new View($trip);
 
         return $this->get('fos_rest.view_handler')->handle($view);
     }
 
-    /**
-    * @Get("/trips/remove/outbound/flight/{tripId}/{flightId}", name="remove_outbound_flight_from_trip", 
-    * options={ "method_prefix" = false })
-    *
+   /**
     * Removes Outbound Flight from Trip
+    * [GET] /trips/{tripId}/outboundflights/{flightId}
     * 
     * @param int $tripId
     * @param int $flightId
     * 
-    * @return  array data
+    * @return  array of Trip with flight removed
     */
-   public function removeOutboundFlightFromTrip($tripId, $flightId)
+   public function removeTripOutboundflightAction($tripId, $flightId)
    {
         $tripManager = $this->get('bsegal_travel_api.trip_manager');
 
@@ -137,19 +128,17 @@ class TripController extends FOSRestController
         return $this->get('fos_rest.view_handler')->handle($view);
    }
 
-    /**
-    * @Get("/trips/remove/return/flight/{tripId}/{flightId}", name="remove_return_flight_from_trip", 
-    * options={ "method_prefix" = false })
-    *
+   /**
     * Removes Return Flight from Trip
+    * [GET] /trips/{tripId}/returnflights/{flightId}
     * 
     * @param int $tripId
     * @param int $flightId
     * 
-    * @return  array data
+    * @return  array of Trip with flight removed
     */
-    public function removeReturnFlightFromTrip($tripId, $flightId)
-    {
+   public function removeTripReturnflightAction($tripId, $flightId)
+   {
         $tripManager = $this->get('bsegal_travel_api.trip_manager');
 
         try {
@@ -161,5 +150,5 @@ class TripController extends FOSRestController
         $view = new View($trip);
 
         return $this->get('fos_rest.view_handler')->handle($view);
-    }
+   }
 }

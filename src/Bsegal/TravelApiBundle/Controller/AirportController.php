@@ -11,7 +11,7 @@ use FOS\RestBundle\Controller\Annotations\Get;
 class AirportController extends FOSRestController
 {  
     /**
-     * List all airports.
+     * List all airports alphabetically.
      *
      * @return array data
      */
@@ -32,7 +32,7 @@ class AirportController extends FOSRestController
     * 
     * @param string $countryName
     * 
-    * @return  array data
+    * @return  array data Airports with corresponding country name
     */
     public function getAirportsByCountryAction($countryName)
     {
@@ -51,7 +51,7 @@ class AirportController extends FOSRestController
     * 
     * @param string $countryCode
     * 
-    * @return  array data
+    * @return  array data Airports with corresponding country code
     */
     public function getAirportsByCountryCodeAction($countryCode)
     {
