@@ -45,16 +45,17 @@ class PassengerManager
         $dateOfBirth
     ) {
         $em = $this->entityManager;
-        $country = $countryManager->getCountryByName($name);
+        $country = $this->countryManager
+            ->getCountryByName($citizenshipCountry);
 
-        if (is_null($country)) {
-            throw new \Exception('Failed to create Passenger with name '.$firstName.' '.$lastName.'. Country of citizenship does not exist.');
+        if (empty($country)) {
+            throw new \Exception('Failed to create Passenger with name '.$firstName.' '.$lastName.'. Country of citizenship does not exist: '.$citizenshipCountry);
         }
 
         $passenger = new Passenger();
         $passenger->setFirstName($firstName);
         $passenger->setLastName($lastName);
-        $passenger->setCountry($country);
+        $passenger->setCitizenshipCountry($country);
         $passenger->setPassportNumber($passportNumber);
         $passenger->setPassportExpiry($passportExpiry);
 

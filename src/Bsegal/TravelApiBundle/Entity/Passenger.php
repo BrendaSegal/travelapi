@@ -49,7 +49,7 @@ class Passenger
     private $phone;
 
     /**
-     * @ORM\Column(name="email", type="string", length=20)
+     * @ORM\Column(name="email", type="string", length=150)
      */
     private $email;
 

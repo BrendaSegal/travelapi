@@ -8,6 +8,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Finder\Finder;
 use Bsegal\TravelApiBundle\Entity\Airport as Airport;
+use Bsegal\TravelApiBundle\Manager\FlightManager as FlightManager;
 
 class CreateSampleFlightsCommand extends ContainerAwareCommand
 {
@@ -29,15 +30,15 @@ class CreateSampleFlightsCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $flightManager = $this->getContainer()->get('bsegal_travel_api.flight_manager');
+        
         for ($i = 0; $i<100; $i++) {
-            $this->createNewFlight($output);
+            $this->createNewFlight($output, $flightManager);
         }
     }
 
-    protected function createNewFlight(OutputInterface $output)
+    protected function createNewFlight(OutputInterface $output, FlightManager $flightManager)
     {   
-        $flightManager = $this->getContainer()->get('bsegal_travel_api.flight_manager');
-
         //select our random departure and arrival Airports
         $departureAirport = $this->selectRandomAirport();
         $arrivalAirport = $this->selectRandomAirport($departureAirport->getId());
