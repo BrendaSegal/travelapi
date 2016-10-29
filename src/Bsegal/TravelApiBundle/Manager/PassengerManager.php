@@ -89,4 +89,15 @@ class PassengerManager
         return $this->entityManager->getRepository('BsegalTravelApiBundle:Passenger')
             ->find($passengerId);
     }
+    
+    /**
+     * Retrieves all Passenger entities
+     * 
+     * @return array of Passenger entities
+     */
+    public function getAllPassengers()
+    {
+        return $this->entityManager->getRepository('BsegalTravelApiBundle:Passenger')
+            ->findAll();
+    }
 }

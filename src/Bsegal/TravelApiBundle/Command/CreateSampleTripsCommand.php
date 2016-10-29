@@ -9,17 +9,17 @@ use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Finder\Finder;
 use Bsegal\TravelApiBundle\Manager\PassengerManager;
 
-class CreateSamplePassengersCommand extends ContainerAwareCommand
+class CreateSampleTripsCommand extends ContainerAwareCommand
 {
     protected function configure() 
     {
-        $this->setName('travelapi:createsamplepassengers')
-            ->setDescription('Creates sample data: passengers.')
-            ->setHelp("Create sample passengers.");
+        $this->setName('travelapi:createsampletrips')
+            ->setDescription('Creates sample data: trips.')
+            ->setHelp("Create sample trips.");
     }
     
     /**
-     * Executes a command to create new Passengers
+     * Executes command to create new sample Trips for each Passenger in the database.
      *     
      * @param  InputInterface  $input
      * @param  OutputInterface $output
@@ -30,17 +30,13 @@ class CreateSamplePassengersCommand extends ContainerAwareCommand
     {
         $passengerManager = $this->getContainer()->get('bsegal_travel_api.passenger_manager');
        
-        for ($i = 0; $i<200; $i++) {
-            $this->createNewPassenger($passengerManager);
+        $passengers = $passengerManager->getAllPassengers();
+        
+        foreach ($passengers as $passenger) {
+            $this->createNewTrip($passenger);
         }
     }
     
-    /**
-     * Creates a new sample Passenger
-     * 
-     * @param PassengerManager $passengerManager
-     * 
-     */
     protected function createNewPassenger(
         PassengerManager $passengerManager
     ) {   
@@ -92,11 +88,6 @@ class CreateSamplePassengersCommand extends ContainerAwareCommand
         return $passportDetails;        
     }
     
-    /**
-     * Randomly generates a 9-digit alphanumeric Passport number
-     * 
-     * @return string
-     */
     protected function selectRandomPassportNumber()
     {
         $passportString = '';
@@ -117,13 +108,6 @@ class CreateSamplePassengersCommand extends ContainerAwareCommand
         return $passportString;
     }
     
-    /**
-     * Randomly selects a date between $startDate and $endDate
-     * 
-     * @param \DateTime $startDate
-     * @param \DateTime $endDate
-     * @return \DateTime
-     */
     protected function selectRandomDate($startDate, $endDate)
     {
         $randomTime = rand(strtotime($startDate->format('Y-m-d H:i:s')), strtotime($endDate->format('Y-m-d H:i:s')));
@@ -134,11 +118,6 @@ class CreateSamplePassengersCommand extends ContainerAwareCommand
         return $randomDate;
     }
     
-    /**
-     * Randomly creates a 9-digit phone number
-     * 
-     * @return string 
-     */
     protected function selectRandomPhone()
     {
         $phone = "";
@@ -150,11 +129,6 @@ class CreateSamplePassengersCommand extends ContainerAwareCommand
         return $phone;
     }
     
-    /**
-     * Randomly selects a name from the list.
-     * 
-     * @return string 
-     */
     protected function selectRandomFirstName()
     {
         $randomNames = [
@@ -184,11 +158,6 @@ class CreateSamplePassengersCommand extends ContainerAwareCommand
         return $randomNames[$index];
     }
     
-    /**
-     * Randomly selects a name from the list.
-     * 
-     * @return string 
-     */
     protected function selectRandomLastName()
     {
         $randomNames = [
