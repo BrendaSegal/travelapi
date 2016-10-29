@@ -9,7 +9,21 @@ use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Controller\Annotations\Get;
 
 class FlightController extends FOSRestController
-{
+{   
+    /**
+     * List all Flights.
+     *
+     * @return array data
+     */
+    public function getFlightsAction()
+    {
+        $flightManager = $this->get('bsegal_travel_api.flight_manager');
+        $flights = $flightManager->retrieveAllFlights();
+        $view = new View($flights);
+
+        return $this->get('fos_rest.view_handler')->handle($view);
+    }
+
     /**
     * @Get("/flights/country/{countryName}", name="get_flights_by_country", 
     * options={ "method_prefix" = false })
@@ -49,19 +63,19 @@ class FlightController extends FOSRestController
     }
 
     /**
-    * @Get("/flights/region/code/{regionCode}", name="get_flights_by_region_code", 
+    * @Get("/flights/region/{regionName}", name="get_flights_by_region", 
     * options={ "method_prefix" = false })
     *
     * List all flights, filtered by region code.
     * 
-    * @param string $regionCode
+    * @param string $regionName
     * 
     * @return  array data
     */
-    public function getFlightsByRegionCodeAction($regionCode)
+    public function getFlightsByRegionNameAction($regionName)
     {
         $flightManager = $this->get('bsegal_travel_api.flight_manager');
-        $flights = $flightManager->retrieveAllFlightsByCountryCode($countryCode);
+        $flights = $flightManager->retrieveAllFlightsByRegion($regionName);
         $view = new View($flights);
 
         return $this->get('fos_rest.view_handler')->handle($view);

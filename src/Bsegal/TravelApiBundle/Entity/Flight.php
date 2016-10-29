@@ -35,6 +35,16 @@ class Flight
     private $ticketsAvailable;
 
     /**
+     * @ORM\Column(name="departure_time", type="datetime", nullable=false)
+     */
+    private $departureTime;
+
+    /**
+     * @ORM\Column(name="arrival_time", type="datetime", nullable=false)
+     */
+    private $arrivalTime;
+
+    /**
      * @ORM\Column(name="created_at", type="datetime", nullable=false)
      */
     private $createdAt;
@@ -172,5 +182,53 @@ class Flight
     public function getDepartureAirport()
     {
         return $this->departureAirport;
+    }
+
+    /**
+     * Set departureTime
+     *
+     * @param \DateTime $departureTime
+     *
+     * @return Flight
+     */
+    public function setDepartureTime($departureTime)
+    {
+        $this->departureTime = $departureTime;
+
+        return $this;
+    }
+
+    /**
+     * Get departureTime
+     *
+     * @return \DateTime
+     */
+    public function getDepartureTime()
+    {
+        return $this->departureTime;
+    }
+
+    /**
+     * Set arrivalTime
+     *
+     * @param \DateTime $arrivalTime
+     *
+     * @return Flight
+     */
+    public function setArrivalTime($arrivalTime)
+    {
+        $this->arrivalTime = $arrivalTime;
+
+        return $this;
+    }
+
+    /**
+     * Get arrivalTime
+     *
+     * @return \DateTime
+     */
+    public function getArrivalTime()
+    {
+        return $this->arrivalTime;
     }
 }

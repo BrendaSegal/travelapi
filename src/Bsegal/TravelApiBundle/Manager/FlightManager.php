@@ -2,8 +2,10 @@
 namespace Bsegal\TravelApiBundle\Manager;
 
 use Doctrine\ORM\EntityManager;
-use Bsegal\TravelApiBundle\Entity\Flight;
+use Bsegal\TravelApiBundle\Entity\Flight as Flight;
 use Bsegal\TravelApiBundle\Entity\Airport;
+use Bsegal\TravelApiBundle\Entity\Country;
+use Doctrine\ORM\Query\ResultSetMapping;
 
 class FlightManager
 {
@@ -23,21 +25,27 @@ class FlightManager
      *
      * @param  Airport $arrivalAirport
      * @param  Airport $departureAirport
+     * @param  \DateTime $departureTime time at which Flight leaves $departureAirport
+     * @param  \DateTime $arrivalTime time at which Flight arrives at $arrivalTime
      * @param  integer $numberOfTicketsAvailable
      * 
      * @return  Flight the resulting created flight
      */
     public function createNewFlight(
-        Airport $arrivalAirport,
         Airport $departureAirport,
+        Airport $arrivalAirport,
+        \DateTime $departureTime,
+        \DateTime $arrivalTime,
         $numberOfTicketsAvailable
     ) {
         $em = $this->entityManager;
 
-        $flight = new Flight();        
+        $flight = new Flight();
         $flight->setDepartureAirport($departureAirport);
         $flight->setArrivalAirport($arrivalAirport);
-        $flight->setNumberOfTicketsAvailable($numberOfTicketsAvailable);
+        $flight->setDepartureTime($departureTime);
+        $flight->setArrivalTime($arrivalTime);
+        $flight->setTicketsAvailable($numberOfTicketsAvailable);
 
         $flight->setCreatedAt(new \DateTime('now'));
         $flight->setUpdatedAt(new \DateTime('now'));
@@ -59,5 +67,203 @@ class FlightManager
     {
         return $this->entityManager->getRepository('BsegalTravelApiBundle:Flight')
             ->find($flightId);
+    }
+
+    /**
+     * Retrieves all flights
+     */
+    public function retrieveAllFlights()
+    {
+        return $this->entityManager->getRepository('BsegalTravelApiBundle:Flight')
+            ->findAll();
+    }
+    
+    /**
+     * Retrieves all flights that have either (or both) the ArrivalAirport
+     * or the DepartureAirport in the country specified by $countryName
+     * 
+     * @param string $countryName
+     * 
+     * @return array containing matching Flight entities
+     */
+    public function retrieveAllFlightsByCountryName($countryName)
+    {
+        $em = $this->entityManager;
+        
+        $query = $em->createQuery(
+            "SELECT f
+            FROM BsegalTravelApiBundle:Flight f
+            JOIN BsegalTravelApiBundle:Airport a 
+            WITH (f.departureAirport = a.id OR f.arrivalAirport = a.id)
+            JOIN BsegalTravelApiBundle:Country c 
+            WITH a.country = c.id
+            WHERE c.name LIKE :countryName"
+        )->setParameter('countryName', $countryName);
+
+        return $query->getResult();
+    }
+    
+    /**
+     * Retrieves all flights that have either (or both) the ArrivalAirport
+     * or the DepartureAirport in the country specified by $countryCode
+     * 
+     * @param string $countryCode the corresponding country code
+     * 
+     * @return array containing matching Flight entities
+     */
+    public function retrieveAllFlightsByCountryCode($countryCode)
+    {
+        $em = $this->entityManager;
+        
+        $query = $em->createQuery(
+            "SELECT f
+            FROM BsegalTravelApiBundle:Flight f
+            JOIN BsegalTravelApiBundle:Airport a 
+            WITH (f.departureAirport = a.id OR f.arrivalAirport = a.id)
+            JOIN BsegalTravelApiBundle:Country c 
+            WITH a.country = c.id
+            WHERE c.code LIKE :countryCode"
+        )->setParameter('countryCode', $countryCode);
+
+        return $query->getResult();
+    }
+    
+    /**
+     * Retrieves all flights that have either (or both) the ArrivalAirport
+     * or the DepartureAirport in the Region specified by $region
+     * 
+     * @param string $region the corresponding Region's name
+     * 
+     * @return array containing matching Flight entities
+     */
+    public function retrieveAllFlightsByRegion($region)
+    {
+        $em = $this->entityManager;
+        
+        $query = $em->createQuery(
+            "SELECT f
+            FROM BsegalTravelApiBundle:Flight f
+            JOIN BsegalTravelApiBundle:Airport a 
+            WITH (f.departureAirport = a.id OR f.arrivalAirport = a.id)
+            JOIN BsegalTravelApiBundle:Region r 
+            WITH a.region = r
+            WHERE r.name LIKE :region"
+        )->setParameter('region', $region);
+
+        return $query->getResult();
+    }
+    
+    /**
+     * Retrieves all flights that have either (or both) the ArrivalAirport
+     * or the DepartureAirport in the municipality specified by $municipality
+     * 
+     * @param string $muncipality
+     * 
+     * @return array containing matching Flight entities
+     */
+    public function retrieveAllFlightsByMunicipality($municipality)
+    {
+        $em = $this->entityManager;
+        
+        $query = $em->createQuery(
+            "SELECT f
+            FROM BsegalTravelApiBundle:Flight f
+            JOIN BsegalTravelApiBundle:Airport a 
+            WITH (f.departureAirport = a.id OR f.arrivalAirport = a.id)
+            WHERE a.municipality LIKE :municipality"
+        )->setParameter('municipality', $municipality);
+
+        return $query->getResult();
+    }
+    
+    public function retrieveAllFlightsByCountryNameOLD($countryName)
+    {
+        $rsm = new ResultSetMapping();
+        $em = $this->entityManager;
+        $rsm->addEntityResult('BsegalTravelApiBundle:Flight', 'f');
+        $rsm->addFieldResult('f', 'id', 'id');
+        $rsm->addFieldResult('f', 'tickets_available', 'ticketsAvailable');
+        $rsm->addFieldResult('f', 'departure_time', 'departureTime');
+        $rsm->addFieldResult('f', 'arrival_time', 'arrivalTime');
+        $rsm->addFieldResult('f', 'created_at', 'createdAt');
+        $rsm->addFieldResult('f', 'updated_at', 'updatedAt');
+        $rsm->addMetaResult('f', 'departure_airport_id', 'departureAirport');
+        $rsm->addMetaResult('f', 'arrival_airport_id', 'arrivalAirport');
+        
+        $query = $em->createNativeQuery(
+            "SELECT f.id, f.tickets_available, f.departure_time, f.arrival_time,
+            f.created_at, f.updated_at, f.departure_airport_id, f.arrival_airport_id
+            FROM flight f 
+            JOIN airport a 
+            ON f.arrival_airport_id = a.id
+            JOIN country c 
+            ON a.country_id = c.id
+            WHERE c.name LIKE :countryName
+            UNION
+            SELECT  f.id, f.tickets_available, f.departure_time, f.arrival_time,
+            f.created_at, f.updated_at, f.departure_airport_id, f.arrival_airport_id
+            FROM flight f 
+            JOIN airport a 
+            ON f.departure_airport_id = a.id
+            JOIN country c 
+            ON a.country_id = c.id
+            WHERE c.name LIKE :countryName
+           ", 
+            $rsm
+        );
+        $query->setParameter('countryName', $countryName);
+        $query->setHint(\Doctrine\ORM\Query::HINT_INCLUDE_META_COLUMNS, true);
+        
+        return $query->getResult();
+    }
+
+    /**
+     * Retrieves all flights that have the DepartureAirport 
+     * in the country specified by $countryName
+     * 
+     * @param string $countryName
+     * 
+     * @return array containing matching Flight entities
+     */
+    public function retrieveAllDepartureFlightsByCountryName($countryName)
+    {
+        $em = $this->entityManager;
+        
+        $query = $em->createQuery(
+            "SELECT f
+            FROM BsegalTravelApiBundle:Flight f
+            JOIN BsegalTravelApiBundle:Airport a 
+            WITH f.departureAirport = a.id
+            JOIN BsegalTravelApiBundle:Country c 
+            WITH a.country = c.id
+            WHERE c.name LIKE :countryName"
+        )->setParameter('countryName', $countryName);
+
+        return $query->getResult();
+    }
+    
+    /**
+     * Retrieves all flights that have the ArrivalAirport
+     * in the country specified by $countryName
+     * 
+     * @param string $countryName
+     * 
+     * @return array containing matching Flight entities
+     */
+    public function retrieveAllArrivalFlightsByCountryName($countryName)
+    {
+        $em = $this->entityManager;
+
+        $query = $em->createQuery(
+            "SELECT f
+            FROM BsegalTravelApiBundle:Flight f
+            JOIN BsegalTravelApiBundle:Airport a 
+            WITH f.arrivalAirport = a.id
+            JOIN BsegalTravelApiBundle:Country c 
+            WITH a.country = c.id
+            WHERE c.name LIKE :countryName"
+        )->setParameter('countryName', $countryName);
+
+        return $query->getResult();
     }
 }
