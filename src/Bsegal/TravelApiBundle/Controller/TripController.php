@@ -98,7 +98,7 @@ class TripController extends FOSRestController
             $trip = $tripManager->addFlightToTrip($tripId, $flightId, true);
             $view = new View($trip);
         } catch (\Exception $e) {
-            $view = new View(['Exception' =>$e->getMessage()]);
+            $view = new View(['Exception' => $e->getMessage()]);
         }
 
         return $this->get('fos_rest.view_handler')->handle($view);
@@ -121,7 +121,7 @@ class TripController extends FOSRestController
             $trip = $tripManager->addFlightToTrip($tripId, $flightId, false);
             $view = new View($trip);
         } catch (\Exception $e) {
-            $view = new View(['Exception' =>$e->getMessage()]);
+            $view = new View(['Exception' => $e->getMessage()]);
         }
         
         return $this->get('fos_rest.view_handler')->handle($view);
@@ -141,10 +141,10 @@ class TripController extends FOSRestController
         $tripManager = $this->get('bsegal_travel_api.trip_manager');
 
         try {
-            $trip = $tripManager->removeFlightFromTrip($trip, $flight, true);            
+            $trip = $tripManager->removeFlightFromTrip($tripId, $flightId, true);            
             $view = new View($trip);
         } catch (\Exception $e) {
-            $view = new View(['Exception' =>$e->getMessage()]);
+            $view = new View(['Exception' => $e->getMessage()]);
         }
         
         return $this->get('fos_rest.view_handler')->handle($view);
@@ -164,10 +164,10 @@ class TripController extends FOSRestController
         $tripManager = $this->get('bsegal_travel_api.trip_manager');
 
         try {
-            $trip = $tripManager->removeFlightFromTrip($trip, $flight, false);
+            $trip = $tripManager->removeFlightFromTrip($tripId, $flightId, false);
             $view = new View($trip);
         } catch (\Exception $e) {
-            $view = new View(['Exception' =>$e->getMessage()]);
+            $view = new View(['Exception' => $e->getMessage()]);
         }
         
         return $this->get('fos_rest.view_handler')->handle($view);
