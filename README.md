@@ -22,7 +22,7 @@ The framework used is Symfony 3.1.5.
    composer install 
   ```
 
-*`If an error occurs at this step, please see the ALTERNATE STEP 8`
+* If an error occurs at this step, please see the ALTERNATE STEP 8`
 
 8. ALTERNATE STEP 8 IF YOU DO NOT HAVE PHP 7 ON YOUR COMPUTER:
   * Run the command:
@@ -39,6 +39,8 @@ composer install
   * Once composer install completes, run the following 2 commands:
     ```
     git checkout -- composer.lock
+    ```
+    ```
     git checkout -- composer.json
     ```
 9. To boot your vagrant instance, type:
