@@ -25,10 +25,10 @@ class PassengerManager
      * @param  string $lastName
      * @param  string $citizenshipCountry name of country
      * @param  string $passportNumber
-     * @param  \Datetime $passportExpiry
+     * @param  string $passportExpiry
      * @param  string $phone
      * @param  string $email
-     * @param  \Datetime $dateOfBirth
+     * @param  string $dateOfBirth
      *
      * @throws  \Exception when country of citizenship does not exist
      * 
@@ -39,7 +39,7 @@ class PassengerManager
         $lastName,
         $citizenshipCountry,
         $passportNumber,
-        \DateTime $passportExpiry,
+        $passportExpiry,
         $phone,
         $email,
         $dateOfBirth
@@ -57,7 +57,7 @@ class PassengerManager
         $passenger->setLastName($lastName);
         $passenger->setCitizenshipCountry($country);
         $passenger->setPassportNumber($passportNumber);
-        $passenger->setPassportExpiry($passportExpiry);
+        $passenger->setPassportExpiry(new \DateTime($passportExpiry));
 
         if ($phone != "") {
             $passenger->setPhone($phone);
@@ -67,7 +67,7 @@ class PassengerManager
             $passenger->setEmail($email);
         }
         
-        $passenger->setDateOfBirth($dateOfBirth);
+        $passenger->setDateOfBirth(new \DateTime($dateOfBirth));
         $passenger->setCreatedAt(new \DateTime('now'));
         $passenger->setUpdatedAt(new \DateTime('now'));
 

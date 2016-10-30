@@ -25,7 +25,7 @@ class TripManager
      * Create new Trip for Passenger defined by $passengerId
      * 
      * @param  integer $passengerId the id of the passenger going on the trip
-     * @param  boolean $isRoundtrip
+     * @param  int $isRoundtrip 0 for false, 1 for true
      *
      * @throws \Exception when passengerId does not refer to an existing Passenger
      * 
@@ -33,7 +33,7 @@ class TripManager
      */
     public function createNewEmptyTrip(
         $passengerId,
-        $isRoundtrip = true
+        $isRoundtrip
     ) {
         $em = $this->entityManager;
 
@@ -46,7 +46,7 @@ class TripManager
 
         $trip = new Trip();
 
-        $trip->setIsRoundtrip($isRoundtrip);
+        $trip->setIsRoundtrip($isRoundtrip !== 0);
         $trip->setPassenger($passenger);
         $trip->setUpdatedAt(new \DateTime('now'));
         $trip->setCreatedAt(new \DateTime('now'));

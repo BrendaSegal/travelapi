@@ -12,7 +12,8 @@ class FlightController extends FOSRestController
 {   
     /**
      * List all Flights.
-     *
+     * [GET] /flights
+     * 
      * @return array data
      */
     public function getFlightsAction()

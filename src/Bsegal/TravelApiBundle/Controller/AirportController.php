@@ -12,7 +12,8 @@ class AirportController extends FOSRestController
 {  
     /**
      * List all airports alphabetically.
-     *
+     * [GET] /airports
+     * 
      * @return array data
      */
     public function getAirportsAction()

@@ -8,6 +8,19 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class ApiController extends Controller
 {
+    public function indexAction()
+    {
+        return new Response('Welcome to the Travel API!');
+    }
+    
+    /**
+     * Calling the API's PUT function for adding a return Flight to a Trip
+     * 
+     * @param int $flightId
+     * @param int $tripId
+     * 
+     * @return JsonResponse
+     */
     public function addReturnFlightToTripAction($flightId, $tripId)
     {
         $request = $this->get('request_stack')->getCurrentRequest();
@@ -27,6 +40,14 @@ class ApiController extends Controller
         ]);
     }
     
+    /**
+     * Calling the API's PUT function for adding an outbound Flight to a Trip
+     * 
+     * @param int $flightId
+     * @param int $tripId
+     * 
+     * @return JsonResponse
+     */
     public function addOutboundFlightToTripAction($flightId, $tripId)
     {
         $request = $this->get('request_stack')->getCurrentRequest();

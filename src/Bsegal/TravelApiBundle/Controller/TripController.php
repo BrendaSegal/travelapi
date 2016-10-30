@@ -7,6 +7,7 @@ use FOS\RestBundle\View\View;
 use FOS\RestBundle\View\ViewHandler;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Controller\Annotations\Get;
+use Symfony\Component\HttpFoundation\Response;
 
 class TripController extends FOSRestController
 {   
@@ -72,12 +73,14 @@ class TripController extends FOSRestController
         $data = json_decode($request->getContent(), true);
         $tripManager = $this->get('bsegal_travel_api.trip_manager');
 
-        $passenger = $tripManager->createNewEmptyTrip(
+        $trip = $tripManager->createNewEmptyTrip(
             $data['passengerId'],
             $data['isRoundtrip']
         );
 
-        return new Response('Created passenger with id '.$passenger->getId());
+        $view = new View($trip);
+        
+        return $this->get('fos_rest.view_handler')->handle($view);
     }
     
     /**

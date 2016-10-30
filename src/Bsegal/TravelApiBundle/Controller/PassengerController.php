@@ -58,7 +58,9 @@ class PassengerController extends FOSRestController
             $data['dateOfBirth']
         );
 
-        return new Response('Created passenger with id '.$passenger->getId());
+        $view = new View($passenger);
+        
+        return $this->get('fos_rest.view_handler')->handle($view);
     }
     
     /**

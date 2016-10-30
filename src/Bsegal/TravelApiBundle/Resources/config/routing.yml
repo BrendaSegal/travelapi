@@ -1,3 +1,7 @@
+bsegal_travel_api_index:
+    path: /
+    defaults: { _controller: BsegalTravelApiBundle:Api:index }
+    
 bsegal_travel_api_add_outbound_flight:
     path:     /api/add/outbound/flight/{flightId}/trip/{tripId}
     defaults: { _controller: BsegalTravelApiBundle:Api:addOutboundFlightToTrip }
