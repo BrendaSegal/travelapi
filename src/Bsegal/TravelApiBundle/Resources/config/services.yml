@@ -1,0 +1,37 @@
+services:
+    bsegal_travel_api.country_manager:
+      class: Bsegal\TravelApiBundle\Manager\CountryManager
+      arguments: 
+        entityManager: "@doctrine.orm.entity_manager"
+
+    bsegal_travel_api.region_manager:
+      class: Bsegal\TravelApiBundle\Manager\RegionManager
+      arguments: 
+        entityManager: "@doctrine.orm.entity_manager"
+        countryManager: "@bsegal_travel_api.country_manager"
+
+    bsegal_travel_api.airport_manager:
+      class: Bsegal\TravelApiBundle\Manager\AirportManager
+      arguments: 
+        entityManager: "@doctrine.orm.entity_manager"
+        countryManager: "@bsegal_travel_api.country_manager"
+        regionManager: "@bsegal_travel_api.region_manager"
+
+    bsegal_travel_api.flight_manager:
+      class: Bsegal\TravelApiBundle\Manager\FlightManager
+      arguments: 
+        entityManager: "@doctrine.orm.entity_manager"
+        airportManager: "@bsegal_travel_api.airport_manager"
+
+    bsegal_travel_api.passenger_manager:
+      class: Bsegal\TravelApiBundle\Manager\PassengerManager
+      arguments: 
+        entityManager: "@doctrine.orm.entity_manager"
+        countryManager: "@bsegal_travel_api.country_manager"
+        
+    bsegal_travel_api.trip_manager:
+      class: Bsegal\TravelApiBundle\Manager\TripManager
+      arguments: 
+        entityManager: "@doctrine.orm.entity_manager"
+        passengerManager: "@bsegal_travel_api.passenger_manager"
+        flightManager: "@bsegal_travel_api.flight_manager"

@@ -1,0 +1,27 @@
+bsegal_travel_api_index:
+    path: /
+    defaults: { _controller: BsegalTravelApiBundle:Api:index }
+    
+bsegal_travel_api_add_outbound_flight:
+    path:     /api/add/outbound/flight/{flightId}/trip/{tripId}
+    defaults: { _controller: BsegalTravelApiBundle:Api:addOutboundFlightToTrip }
+
+bsegal_travel_api_add_return_flight:
+    path:     /api/add/return/flight/{flightId}/trip/{tripId}
+    defaults: { _controller: BsegalTravelApiBundle:Api:addReturnFlightToTrip }
+    
+airports:
+    type:     rest
+    resource: Bsegal\TravelApiBundle\Controller\AirportController
+
+flights:
+    type:     rest
+    resource: Bsegal\TravelApiBundle\Controller\FlightController
+
+trips:
+    type:     rest
+    resource: Bsegal\TravelApiBundle\Controller\TripController
+
+passengers:
+    type:     rest
+    resource: Bsegal\TravelApiBundle\Controller\PassengerController
